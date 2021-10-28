@@ -10,7 +10,7 @@ System
  
  
 --To get the project on the system use following commands
-1.git clone (the Http/ssh link)
+1.git clone https://github.com/Tejas-Samel/Online-Auction-System-with-3d-model-viewer.git
  
 2.Create a SQL schema of name online-auction 
  
