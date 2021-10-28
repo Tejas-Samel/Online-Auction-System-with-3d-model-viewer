@@ -7,7 +7,7 @@ System
  
  For 3d model viewer API of model-viewer has been used https://modelviewer.dev/
  Only glb files are supported for the 3d model
- 
+ -Some sample files are present within sample directory 
  
 --To get the project on the system use following commands
 1.git clone https://github.com/Tejas-Samel/Online-Auction-System-with-3d-model-viewer.git
