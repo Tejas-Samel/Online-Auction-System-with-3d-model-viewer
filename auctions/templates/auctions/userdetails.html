@@ -1,0 +1,40 @@
+{% extends "auctions/layout.html" %}
+{%block head%}
+
+{%endblock%}
+{% block body %}
+
+{% if message %}
+    <div class="alert alert-danger">{{ message }}</div>
+{% endif %}
+
+
+
+<div class="card inout ">
+    <div class="card-body m-4 bg-light">
+        <h2 class="card-title">User Details</h2>
+
+        <form action="{% url 'userdetails' %}" method="post" class="card-text mb-3">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Card</label>
+                <input class="form-control" type="text" name="card" placeholder="0000 0000 0000 0000"  id="validationDefault01" required>
+            </div>
+            
+
+            <div class="form-group">
+                <label>Phone</label>
+                <input class="form-control" type="phone" name="phone" placeholder="Phone" id="validationDefault02" required>
+<!--                <input class="btn btn-primary" type="SendOTP" value="SendOTP" >-->
+<!--                <input class="form-control" type="otp" name="otp" placeholder="otp" id="validationDefault03" required>-->
+            </div>
+                
+
+            <input class="btn btn-primary" type="submit" value="Submit" >
+        </form>
+    </div>
+</div>
+
+
+{%endblock%}

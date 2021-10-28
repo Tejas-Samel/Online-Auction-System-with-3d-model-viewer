@@ -1,0 +1,40 @@
+{% extends 'auctions/layout.html' %}
+
+{% block title %}
+Categories
+{% endblock %}
+
+{% block body %}
+<div class="grid-container text-center">
+    <hr>
+    {% for category in categories %}
+    <a href="{% url 'filter' category.name %}">
+        <div class="grid-item">
+            {{ category.name|title }}
+        </div>
+    </a>
+    <hr>
+    {% endfor %}
+</div>
+
+{% if user.is_authenticated %}
+<div class="add-category">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    <form action="{% url 'categories' %}" method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center">
+            <div class="form-group  ">
+                <input type="text" name="category" class="form-control category-input mb-3" id="validationDefault01" required>
+                <button class="btn btn-primary mx-4">Add new Category</button>
+            </div>
+
+        </div>
+    </form>
+</div>
+{% endif %}
+
+{% endblock %}

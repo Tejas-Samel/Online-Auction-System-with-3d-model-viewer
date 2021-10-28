@@ -1,0 +1,40 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2 class="py-3 m-3">Auction Listings</h2>
+
+<div class="row">
+    {% for obj in objects %}
+    <div class="col">
+        <a href="{% url 'details' obj.id %}">
+            <div class="card" style="width: 15rem;">
+                {%if obj.image%}
+                <img class="card-img-top rounded" src="{{ obj.image.url }}" alt="{{ obj.name }}" height="300">
+                {%endif%}
+                    
+                <div class="card-body bg-light">
+                    <h5 class="card-title">{{ obj.name }}</h5>
+                    <p class="card-text">{{ obj.startBid }}</p>
+                    <small>Created: <strong>{{ obj.date|date:"d-m-Y" }}</strong></small><br>
+                    {% if obj.active %}
+                    <span class="badge status--active badge-primary">Active</span>
+                    {% else %}
+                    <span class="badge status--inactive badge-danger">Ended</span>
+                    {% endif %}
+                    {% if obj in user.watchlist.all %}
+                    <span class="badge status--watching badge-white">Watching</span>
+                    {% else %}
+                    <span class="badge status--notwatching badge-danger">Not Watching</span>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+    </div>
+
+
+    {% empty %}
+    <div class="alert alert-info text-center p-4 my-4 mx-2">No items Available</div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

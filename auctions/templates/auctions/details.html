@@ -1,0 +1,203 @@
+{% extends 'auctions/layout.html'%}
+
+{% block title %}
+{{ item.name }}
+{%endblock %}
+
+{% block body %}
+<script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+></script>
+<style>
+	model-viewer{
+		width:300px;
+		height: 480px;
+		margin: 0 auto;
+	}
+</style>
+<br>
+
+	<h4 class="mb-3">Listing: <span class="title">{{ item.name }}</span></h4>
+	<div class="container">
+		<div class="card bg-light">
+			<div class="container-fluid m-2">
+				<div class="wrapper row">
+					<div class="preview col-md-6">
+						
+						<div id="Controls" class="carousel slide" data-ride="carousel">
+							<div class="carousel-inner m-2">
+							  <div class="carousel-item active">
+								<img class="d-block w-100 rounded" src="{{ item.image.url }}" height="" alt="First slide">
+							  </div>
+							  <div class="carousel-item">
+								<img class="d-block w-100 rounded" src="{{ item.image2.url }}" height="" alt="Second slide">
+							  </div>
+							</div>
+							<a class="carousel-control-prev" href="#Controls" role="button" data-slide="prev">
+							  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							  <span class="sr-only">Previous</span>
+							</a>
+							<a class="carousel-control-next" href="#Controls" role="button" data-slide="next">
+							  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+							  <span class="sr-only">Next</span>
+							</a>
+						  </div>
+						  <!-- Modal -->
+							<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+								<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+									<h5 class="modal-title" id="exampleModalLabel">VR model</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+									</div>
+									<div class="modal-body">
+										<model-viewer src="{{item.vrmodel.url}}"  alt="3dmodel" camera-controls auto-rotate></model-viewer>
+									</div>
+									<div class="modal-footer">
+									<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+									
+									</div>
+								</div>
+								</div>
+							</div>
+
+							<!-- Button trigger modal -->
+								
+						<!-- <div class="preview-pic tab-content">
+						  <div class="tab-pane active m-2" id="pic-1"><img src="{{ item.image.url }}" class= "rounded " name="image" height="480" /></div>
+						</div>
+						<model-viewer src="{{item.vrmodel.url}}"  alt="3dmodel" camera-controls auto-rotate></model-viewer> -->
+						
+					</div>
+					<div class="details col-md-6">
+						<h3 class="product-title">{{ item.name }}</h3>
+						{%if item.vrmodel %}
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+							VRmodel
+						</button>
+						{%endif%}
+
+						<p class="product-description">{{ item.description }}</p>
+						<h5 class="price">Base Bid: <span><small>₹{{ item.startBid }}</small></span></h5>
+						
+						{% for bid in bids %}
+    					<div class="text-center">
+        				{{ bid.user.username }} bid <strong>{{ bid.bidValue }}</strong> at {{bid.date|date:'M d, h:i a' }}
+    					</div>
+
+						{% empty %}
+						<div class="alert alert-warning text-center  m-auto">No Bids Yet!</div>
+						{% endfor %}
+						<section class="my-3">
+							{% if messages %} {% for message in messages %}
+							<div
+									class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}"
+									role="alert"
+							>
+								{{ message }}
+							</div>
+							{% endfor %} {% endif %} {% if bid and item.active == False %}
+					
+							<div class="alert alert-primary text-center">
+								{% if bid.user.username == user.username %} You Won The Auction! {% else%}
+								<strong>{{ bid.user.username }}</strong> won, with a bid of
+								<strong>₹{{ bid.bidValue }}</strong>
+								{% endif %}
+							</div>
+							{% endif %} {% if item.active and user.is_authenticated %}
+							
+							<form action="{% url 'bid' item.id %}" method="post">
+								{% csrf_token %}
+								{% if not item.user.username == user.username %}
+								<div class="form-group d-flex">
+									<input
+											type="number"
+											name="bid"
+											class="form-control col-3 m-2 "
+											placeholder="Bid"
+											
+									/><button class="btn btn-primary m-2" type="submit">Place Bid</button>
+								
+								
+								</div>
+								{%endif%}
+									{% if item.user.username == user.username %}
+									<a href="{% url 'end' item.id %}">
+										<button class="btn btn-danger" type="button">End Auction</button>
+									</a>
+									{% endif %}
+								
+							
+							</form>
+							{% endif %}
+						</section>
+
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<section>
+        Details:
+        <ul>
+            <li>Listed By: <strong>{{ item.user.username }}</strong></li>
+            <li>Category: <strong>{{ item.category.name }}</strong></li>
+            <li>Listed On: <strong>{{ item.date }}</strong></li>
+        </ul>
+    </section>
+
+    <section>
+        Comments: {% for comment in comments %}
+        <div class="card comment">
+            <div class="card-body">
+                <div class="card-title">
+                    <strong>{{ comment.user.username }}</strong>: {{ comment.commentValue}}
+                </div>
+                <div class="card-text">
+                    <small
+                    >Commented on:
+                        <strong>{{ comment.date|date:'M d, h:i a' }}</strong></small
+                    >
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info m-2">No Comments Yet</div>
+        {% endfor %} {% if user.is_authenticated %}
+        <form action="{% url 'comment' item.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+        <textarea
+                name="content"
+                class="form-control"
+                placeholder="Enter a comment"
+        ></textarea>
+				<button class="btn btn-primary py-2 px-2 mt-2" type="submit">Comment</button>
+            </div>
+            
+        </form>
+        
+
+        <form action="{% url 'watchlist' %}" method="post" class="add-category">
+            {% csrf_token %}
+            <input type="hidden" name="item" value="{{ item.id }}"/>
+            <input
+                    type="hidden"
+                    value="{% if item in user.watchlist.all %}0{% else %}1{% endif %}"
+                    name="status"
+            />
+            <button class="btn btn-primary watchlist" type="submit">
+                {% if item in user.watchlist.all %}Remove from{% else %}Add to{% endif %} Watchlist
+            </button>
+        </form>
+        {% endif %}
+    </section>
+</div>
+</div>
+<link href="/css/details.css" rel="stylesheet" id="bootstrap-css">
+{% endblock %}
